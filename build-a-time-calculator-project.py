@@ -16,31 +16,36 @@ def add_time(start, duration, day_of_week=False):
     duration_tuple=duration.partition(':')
     durationhr = int(duration_tuple[0])
     durationmin = int(duration_tuple[2])
-    
-    # delete + start_hours for original
+
+    # number of days from durationhr
     number_of_days = int(durationhr / 24)
 
-    # print new_time
+    # print total minutes with variable end_minutes
     end_minutes = start_minute + durationmin
-    while end_minutes > 60:
+    # limit minutes to less than 60
+    while end_minutes >= 60:
         start_hours += 1
         end_minutes = end_minutes - 60
-    
-    number_of_ampm_flips = int((start_hours + durationhr) / 12)
 
+    # new final hour mark, limit to 12 and set to 12 if modulo equals 0
     end_hours = (start_hours + durationhr) % 12
     end_hours = end_hours = 12 if end_hours == 0 else end_hours
 
+    # if final minute is less than 10, add '0' before digit
     end_minutes = end_minutes if end_minutes > 9 else "0" + str(end_minutes)
-    
+
+    # if meridiem is set to 'PM' and start_hours + the remainder of durationhr/24 is less than or equal to 12, add another day to number of days
     if am_pm == "PM" and start_hours + (durationhr % 24) >= 12:
         number_of_days += 1 
         
-    
+    # number of meridiem flips 
+    number_of_ampm_flips = int((start_hours + durationhr) / 12)
+    # keep meridiem if number_of_ampm_flips is even, switch if odd
     am_pm = am_pm_flip[am_pm] if (number_of_ampm_flips % 2 == 1) else am_pm
     
     return_time = str(end_hours) + ":" + str(end_minutes) + ' ' + am_pm
 
+    # if day_of_week is True
     if day_of_week:
         day_of_week = day_of_week.lower()
         index = int((days_of_week_index[day_of_week]) + number_of_days) % 7
